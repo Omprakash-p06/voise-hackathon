@@ -1,4 +1,4 @@
-# SafeMaternity Frontend
+# FetoSense Frontend
 
 A mobile‑first maternal health dashboard UI for **ASHA workers in rural India** to identify, prioritize, and manage high‑risk pregnancies using simple, rule‑based logic inspired by WHO and Government of India PMSMA guidelines.[web:136][web:138]
 
