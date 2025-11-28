@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FetoSense - Patients</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center justify-content-between" style="width: 100%;">
+                <a href="index.html" class="navbar-brand">
+                    <span>🤰</span>
+                    <span>FetoSense</span>
+                </a>
+                <div class="d-flex gap-1">
+                    <a href="index.html" class="nav-link">Dashboard</a>
+                    <a href="patients.html" class="nav-link">Patients</a>
+                    <a href="add-patient.html" class="nav-link">Add Patient</a>
+                    <a href="analytics.html" class="nav-link">Analytics</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="index.html">Dashboard</a>
+            <span class="breadcrumb-separator">/</span>
+            <span>Patients</span>
+        </div>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">Patient List</h1>
+            <p class="page-subtitle">Manage and monitor all registered patients</p>
+        </div>
+
+        <!-- Filters and Search -->
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center" style="flex-wrap: wrap; gap: 16px;">
+                    <div class="d-flex gap-1" style="flex-wrap: wrap;">
+                        <button class="btn btn-sm btn-outline active" data-filter="all" onclick="filterPatients('all')">
+                            All Patients
+                        </button>
+                        <button class="btn btn-sm btn-outline" data-filter="high" onclick="filterPatients('high')">
+                            High Risk
+                        </button>
+                        <button class="btn btn-sm btn-outline" data-filter="moderate"
+                            onclick="filterPatients('moderate')">
+                            Moderate Risk
+                        </button>
+                        <button class="btn btn-sm btn-outline" data-filter="low" onclick="filterPatients('low')">
+                            Low Risk
+                        </button>
+                        <button class="btn btn-sm btn-outline" data-filter="overdue"
+                            onclick="filterPatients('overdue')">
+                            Overdue
+                        </button>
+                    </div>
+                    <div class="form-group" style="margin: 0; min-width: 250px;">
+                        <input type="text" class="form-control" id="searchInput"
+                            placeholder="Search by name or village..." oninput="searchPatients()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Patients Table -->
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2 class="card-title">
+                        <span id="patientCount">0</span> Patient(s)
+                    </h2>
+                    <a href="add-patient.html" class="btn btn-primary btn-sm">
+                        <span>➕</span>
+                        <span>Add New Patient</span>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body" style="padding: 0;">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable('name')" style="cursor: pointer;">Name ↕</th>
+                                <th onclick="sortTable('village')" style="cursor: pointer;">Village ↕</th>
+                                <th onclick="sortTable('age')" style="cursor: pointer;">Age ↕</th>
+                                <th>ASHA Worker</th>
+                                <th onclick="sortTable('lastVisit')" style="cursor: pointer;">Last Visit ↕</th>
+                                <th onclick="sortTable('risk')" style="cursor: pointer;">Risk Level ↕</th>
+                                <th>Next Follow-up</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patientsTable"></tbody>
+                    </table>
+                </div>
+                <div id="emptyState" class="text-center" style="padding: 48px; display: none;">
+                    <p class="text-muted" style="font-size: 1.125rem; margin-bottom: 16px;">No patients found</p>
+                    <a href="add-patient.html" class="btn btn-primary">Add Your First Patient</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        let currentFilter = 'all';
+        let currentSort = { field: 'name', ascending: true };
+        let allPatients = [];
+
+        function loadPatients() {
+            allPatients = FetoSense.getPatients();
+
+            // Check URL parameters for filter
+            const urlParams = new URLSearchParams(window.location.search);
+            const filterParam = urlParams.get('filter');
+            if (filterParam) {
+                currentFilter = filterParam;
+                updateFilterButtons();
+            }
+
+            renderPatients();
+        }
+
+        function updateFilterButtons() {
+            document.querySelectorAll('[data-filter]').forEach(btn => {
+                if (btn.dataset.filter === currentFilter) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        function filterPatients(filter) {
+            currentFilter = filter;
+            updateFilterButtons();
+            renderPatients();
+        }
+
+        function searchPatients() {
+            renderPatients();
+        }
+
+        function sortTable(field) {
+            if (currentSort.field === field) {
+                currentSort.ascending = !currentSort.ascending;
+            } else {
+                currentSort.field = field;
+                currentSort.ascending = true;
+            }
+            renderPatients();
+        }
+
+        function renderPatients() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+
+            // Filter patients
+            let filteredPatients = allPatients.filter(patient => {
+                // Search filter
+                if (searchTerm) {
+                    const matchesSearch = patient.name.toLowerCase().includes(searchTerm) ||
+                        patient.village.toLowerCase().includes(searchTerm);
+                    if (!matchesSearch) return false;
+                }
+
+                // Risk/status filter
+                if (currentFilter !== 'all') {
+                    const score = RiskCalculator.calculateScore(patient);
+                    const category = RiskCalculator.getCategory(score);
+                    const followupDate = RiskCalculator.getNextFollowupDate(patient);
+                    const status = RiskCalculator.getFollowupStatus(followupDate);
+
+                    if (currentFilter === 'high' && category !== 'HIGH') return false;
+                    if (currentFilter === 'moderate' && category !== 'MODERATE') return false;
+                    if (currentFilter === 'low' && category !== 'LOW') return false;
+                    if (currentFilter === 'overdue' && status !== 'OVERDUE') return false;
+                }
+
+                return true;
+            });
+
+            // Sort patients
+            filteredPatients.sort((a, b) => {
+                let valueA, valueB;
+
+                switch (currentSort.field) {
+                    case 'name':
+                        valueA = a.name.toLowerCase();
+                        valueB = b.name.toLowerCase();
+                        break;
+                    case 'village':
+                        valueA = a.village.toLowerCase();
+                        valueB = b.village.toLowerCase();
+                        break;
+                    case 'age':
+                        valueA = a.age;
+                        valueB = b.age;
+                        break;
+                    case 'lastVisit':
+                        valueA = new Date(a.visits[a.visits.length - 1].date);
+                        valueB = new Date(b.visits[b.visits.length - 1].date);
+                        break;
+                    case 'risk':
+                        valueA = RiskCalculator.calculateScore(a);
+                        valueB = RiskCalculator.calculateScore(b);
+                        break;
+                    default:
+                        return 0;
+                }
+
+                if (valueA < valueB) return currentSort.ascending ? -1 : 1;
+                if (valueA > valueB) return currentSort.ascending ? 1 : -1;
+                return 0;
+            });
+
+            // Update count
+            document.getElementById('patientCount').textContent = filteredPatients.length;
+
+            // Render table
+            const tbody = document.getElementById('patientsTable');
+            const emptyState = document.getElementById('emptyState');
+
+            if (filteredPatients.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            tbody.innerHTML = '';
+
+            filteredPatients.forEach(patient => {
+                const latestVisit = patient.visits[patient.visits.length - 1];
+                const score = RiskCalculator.calculateScore(patient);
+                const category = RiskCalculator.getCategory(score);
+                const followupDate = RiskCalculator.getNextFollowupDate(patient);
+                const status = RiskCalculator.getFollowupStatus(followupDate);
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${patient.name}</strong></td>
+                    <td>${patient.village}</td>
+                    <td>${patient.age}</td>
+                    <td>${patient.ashaName}</td>
+                    <td>${Utils.formatDate(latestVisit.date)}</td>
+                    <td><span class="badge badge-${category.toLowerCase()}">${category}</span></td>
+                    <td>${Utils.formatDate(followupDate)}</td>
+                    <td><span class="badge badge-${status.toLowerCase()}">${status}</span></td>
+                    <td>
+                        <a href="patient-details.html?id=${patient.id}" class="btn btn-primary btn-sm">View Details</a>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Load patients on page load
+        document.addEventListener('DOMContentLoaded', loadPatients);
+    </script>
+</body>
+
+</html>

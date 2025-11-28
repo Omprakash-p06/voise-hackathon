@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FetoSense - Add Patient</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center justify-content-between" style="width: 100%;">
+                <a href="index.html" class="navbar-brand">
+                    <span>🤰</span>
+                    <span>FetoSense</span>
+                </a>
+                <div class="d-flex gap-1">
+                    <a href="index.html" class="nav-link">Dashboard</a>
+                    <a href="patients.html" class="nav-link">Patients</a>
+                    <a href="add-patient.html" class="nav-link">Add Patient</a>
+                    <a href="analytics.html" class="nav-link">Analytics</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container" style="max-width: 900px;">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="index.html">Dashboard</a>
+            <span class="breadcrumb-separator">/</span>
+            <span>Add Patient / Record Visit</span>
+        </div>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">Add New Patient / Record Visit</h1>
+            <p class="page-subtitle">Enter patient information and vital signs</p>
+        </div>
+
+        <!-- Form -->
+        <div class="card">
+            <div class="card-body">
+                <form id="patientForm">
+                    <!-- Patient Demographics -->
+                    <h3
+                        style="font-size: 1.25rem; font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--border-color-light);">
+                        Patient Demographics
+                    </h3>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+                        <div class="form-group">
+                            <label class="form-label">Patient Name *</label>
+                            <input type="text" class="form-control" id="patientName" required
+                                placeholder="Enter full name">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Age (years) *</label>
+                            <input type="number" class="form-control" id="patientAge" required min="15" max="50"
+                                placeholder="Age">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+                        <div class="form-group">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="patientPhone"
+                                placeholder="10-digit mobile number">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Village *</label>
+                            <input type="text" class="form-control" id="patientVillage" required
+                                placeholder="Village name">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px;">
+                        <div class="form-group">
+                            <label class="form-label">ASHA Worker Name</label>
+                            <input type="text" class="form-control" id="ashaName" placeholder="ASHA worker name">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Family Contact Number</label>
+                            <input type="tel" class="form-control" id="familyContact" placeholder="Emergency contact">
+                        </div>
+                    </div>
+
+                    <!-- Visit Information -->
+                    <h3
+                        style="font-size: 1.25rem; font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--border-color-light);">
+                        Visit Information
+                    </h3>
+
+                    <div class="form-group" style="margin-bottom: 32px;">
+                        <label class="form-label">Visit Date *</label>
+                        <input type="date" class="form-control" id="visitDate" required style="max-width: 300px;">
+                    </div>
+
+                    <!-- Vital Signs -->
+                    <h3
+                        style="font-size: 1.25rem; font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--border-color-light);">
+                        Vital Signs
+                    </h3>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+                        <div class="form-group">
+                            <label class="form-label">Hemoglobin (g/dL) *</label>
+                            <input type="number" class="form-control" id="hemoglobin" required step="0.1" min="4"
+                                max="16" placeholder="e.g., 10.5">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Systolic BP (mmHg) *</label>
+                            <input type="number" class="form-control" id="systolicBP" required min="80" max="200"
+                                placeholder="e.g., 120">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Diastolic BP (mmHg) *</label>
+                            <input type="number" class="form-control" id="diastolicBP" required min="50" max="140"
+                                placeholder="e.g., 80">
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 32px;">
+                        <label class="form-label">Weight (kg)</label>
+                        <input type="number" class="form-control" id="weight" step="0.1" min="30" max="120"
+                            placeholder="e.g., 55.5" style="max-width: 200px;">
+                    </div>
+
+                    <!-- Symptoms -->
+                    <h3
+                        style="font-size: 1.25rem; font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--border-color-light);">
+                        Symptoms
+                    </h3>
+
+                    <div
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 32px;">
+                        <div style="background-color: var(--gray-50); padding: 12px; border-radius: 8px;">
+                            <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                                <input type="checkbox" id="swelling" style="width: 20px; height: 20px;">
+                                <span>Swelling (सूजन)</span>
+                            </label>
+                        </div>
+
+                        <div style="background-color: var(--gray-50); padding: 12px; border-radius: 8px;">
+                            <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                                <input type="checkbox" id="headache" style="width: 20px; height: 20px;">
+                                <span>Headache (सिरदर्द)</span>
+                            </label>
+                        </div>
+
+                        <div style="background-color: var(--gray-50); padding: 12px; border-radius: 8px;">
+                            <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                                <input type="checkbox" id="blurredVision" style="width: 20px; height: 20px;">
+                                <span>Blurred Vision (धुंधली दृष्टि)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="d-flex gap-2"
+                        style="padding-top: 16px; border-top: 1px solid var(--border-color-light);">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <span>💾</span>
+                            <span>Save Patient / Visit</span>
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-lg" onclick="simulateVoiceInput()">
+                            <span>🎤</span>
+                            <span>Voice Input (Demo)</span>
+                        </button>
+                        <button type="reset" class="btn btn-outline btn-lg">
+                            Clear Form
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Help Text -->
+        <div class="card"
+            style="background-color: var(--info-teal); background: linear-gradient(135deg, rgba(0, 137, 123, 0.1) 0%, rgba(77, 182, 172, 0.1) 100%); border-color: var(--info-teal);">
+            <div class="card-body">
+                <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 8px; color: var(--info-teal);">
+                    ℹ️ Instructions
+                </h3>
+                <ul style="margin: 0; padding-left: 20px; color: var(--text-primary);">
+                    <li>If the patient already exists (same name and village), a new visit will be recorded</li>
+                    <li>If the patient is new, they will be added to the system with this initial visit</li>
+                    <li>All fields marked with * are required</li>
+                    <li>Risk assessment will be calculated automatically based on WHO & PMSMA guidelines</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Set today's date as default
+        document.getElementById('visitDate').valueAsDate = new Date();
+
+        // Voice input simulation
+        function simulateVoiceInput() {
+            const names = ['Sita Devi', 'Lakshmi Kumari', 'Parvati Sharma', 'Durga Singh', 'Saraswati Verma'];
+            const villages = ['Rampur', 'Shivpur', 'Lakshmipur', 'Ganeshpur', 'Hanumanpur'];
+            const ashaNames = ['Rekha Sharma', 'Meena Devi', 'Sita Devi', 'Radha Kumari'];
+
+            document.getElementById('patientName').value = names[Math.floor(Math.random() * names.length)];
+            document.getElementById('patientAge').value = Math.floor(Math.random() * 20) + 18;
+            document.getElementById('patientPhone').value = '98765' + Math.floor(Math.random() * 100000);
+            document.getElementById('patientVillage').value = villages[Math.floor(Math.random() * villages.length)];
+            document.getElementById('ashaName').value = ashaNames[Math.floor(Math.random() * ashaNames.length)];
+            document.getElementById('familyContact').value = '98765' + Math.floor(Math.random() * 100000);
+            document.getElementById('hemoglobin').value = (Math.random() * 6 + 7).toFixed(1);
+            document.getElementById('systolicBP').value = Math.floor(Math.random() * 50) + 110;
+            document.getElementById('diastolicBP').value = Math.floor(Math.random() * 30) + 70;
+            document.getElementById('weight').value = (Math.random() * 30 + 45).toFixed(1);
+
+            // Random symptoms
+            document.getElementById('swelling').checked = Math.random() > 0.7;
+            document.getElementById('headache').checked = Math.random() > 0.8;
+            document.getElementById('blurredVision').checked = Math.random() > 0.9;
+
+            Utils.showToast('Voice input simulated! Form filled with sample data.', 'info');
+        }
+
+        // Form submission
+        document.getElementById('patientForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const name = document.getElementById('patientName').value.trim();
+            const age = parseInt(document.getElementById('patientAge').value);
+            const phone = document.getElementById('patientPhone').value.trim();
+            const village = document.getElementById('patientVillage').value.trim();
+            const ashaName = document.getElementById('ashaName').value.trim();
+            const familyContact = document.getElementById('familyContact').value.trim();
+            const visitDate = document.getElementById('visitDate').value;
+            const hemoglobin = parseFloat(document.getElementById('hemoglobin').value);
+            const systolicBP = parseInt(document.getElementById('systolicBP').value);
+            const diastolicBP = parseInt(document.getElementById('diastolicBP').value);
+            const weight = parseFloat(document.getElementById('weight').value) || 0;
+
+            const symptoms = [];
+            if (document.getElementById('swelling').checked) symptoms.push('swelling');
+            if (document.getElementById('headache').checked) symptoms.push('headache');
+            if (document.getElementById('blurredVision').checked) symptoms.push('blurredVision');
+
+            const visit = {
+                date: visitDate,
+                hemoglobin: hemoglobin,
+                systolicBP: systolicBP,
+                diastolicBP: diastolicBP,
+                weight: weight,
+                symptoms: symptoms
+            };
+
+            // Check if patient exists
+            const patients = FetoSense.getPatients();
+            const existingPatient = patients.find(p =>
+                p.name.toLowerCase() === name.toLowerCase() &&
+                p.village.toLowerCase() === village.toLowerCase()
+            );
+
+            if (existingPatient) {
+                // Add visit to existing patient
+                FetoSense.addVisit(existingPatient.id, visit);
+                Utils.showToast(`New visit recorded for ${name}`, 'success');
+
+                // Redirect to patient details
+                setTimeout(() => {
+                    window.location.href = `patient-details.html?id=${existingPatient.id}`;
+                }, 1500);
+            } else {
+                // Create new patient
+                const newPatient = {
+                    name: name,
+                    age: age,
+                    phone: phone || 'Not provided',
+                    village: village,
+                    ashaName: ashaName || 'Not assigned',
+                    familyContact: familyContact || 'Not provided',
+                    visits: [visit],
+                    adherence: { ironMorning: false, ironEvening: false, protein: false, rest: false }
+                };
+
+                const newId = FetoSense.addPatient(newPatient);
+                Utils.showToast(`New patient added: ${name}`, 'success');
+
+                // Redirect to patient details
+                setTimeout(() => {
+                    window.location.href = `patient-details.html?id=${newId}`;
+                }, 1500);
+            }
+        });
+    </script>
+</body>
+
+</html>

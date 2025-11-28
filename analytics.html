@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FetoSense - Analytics</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center justify-content-between" style="width: 100%;">
+                <a href="index.html" class="navbar-brand">
+                    <span>🤰</span>
+                    <span>FetoSense</span>
+                </a>
+                <div class="d-flex gap-1">
+                    <a href="index.html" class="nav-link">Dashboard</a>
+                    <a href="patients.html" class="nav-link">Patients</a>
+                    <a href="add-patient.html" class="nav-link">Add Patient</a>
+                    <a href="analytics.html" class="nav-link">Analytics</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="index.html">Dashboard</a>
+            <span class="breadcrumb-separator">/</span>
+            <span>Analytics</span>
+        </div>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">Population Health Analytics</h1>
+            <p class="page-subtitle">Insights and trends across all patients</p>
+        </div>
+
+        <!-- Summary Metrics -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-icon primary">
+                    <span>👥</span>
+                </div>
+                <div class="metric-value" id="totalPatients">0</div>
+                <div class="metric-label">Total Patients</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-icon success">
+                    <span>🟢</span>
+                </div>
+                <div class="metric-value" id="lowRiskCount">0</div>
+                <div class="metric-label">Low Risk</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-icon warning">
+                    <span>🟡</span>
+                </div>
+                <div class="metric-value" id="moderateRiskCount">0</div>
+                <div class="metric-label">Moderate Risk</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-icon danger">
+                    <span>🔴</span>
+                </div>
+                <div class="metric-value" id="highRiskCount">0</div>
+                <div class="metric-label">High Risk</div>
+            </div>
+        </div>
+
+        <!-- Charts Row 1 -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+            <!-- Risk Distribution -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Risk Distribution</h2>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="riskDistributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Age Distribution -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Age Distribution</h2>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="ageDistributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row 2 -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+            <!-- Average Hemoglobin by Risk -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Average Hemoglobin by Risk Level</h2>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="hemoglobinByRiskChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Village Distribution -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Patients by Village</h2>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="villageDistributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Adherence Statistics -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Adherence Statistics</h2>
+            </div>
+            <div class="card-body">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px;">
+                    <div
+                        style="text-align: center; padding: 20px; background-color: var(--gray-50); border-radius: 8px;">
+                        <div style="font-size: 2.5rem; font-weight: 700; color: var(--primary-blue); margin-bottom: 8px;"
+                            id="ironMorningAdherence">0%</div>
+                        <div style="color: var(--text-secondary); font-weight: 500;">Iron - Morning</div>
+                    </div>
+                    <div
+                        style="text-align: center; padding: 20px; background-color: var(--gray-50); border-radius: 8px;">
+                        <div style="font-size: 2.5rem; font-weight: 700; color: var(--primary-blue); margin-bottom: 8px;"
+                            id="ironEveningAdherence">0%</div>
+                        <div style="color: var(--text-secondary); font-weight: 500;">Iron - Evening</div>
+                    </div>
+                    <div
+                        style="text-align: center; padding: 20px; background-color: var(--gray-50); border-radius: 8px;">
+                        <div style="font-size: 2.5rem; font-weight: 700; color: var(--primary-blue); margin-bottom: 8px;"
+                            id="proteinAdherence">0%</div>
+                        <div style="color: var(--text-secondary); font-weight: 500;">High-Protein Food</div>
+                    </div>
+                    <div
+                        style="text-align: center; padding: 20px; background-color: var(--gray-50); border-radius: 8px;">
+                        <div style="font-size: 2.5rem; font-weight: 700; color: var(--primary-blue); margin-bottom: 8px;"
+                            id="restAdherence">0%</div>
+                        <div style="color: var(--text-secondary); font-weight: 500;">Adequate Rest</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Insights -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Key Insights</h2>
+            </div>
+            <div class="card-body">
+                <div id="insights"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        let charts = {};
+
+        function loadAnalytics() {
+            const patients = FetoSense.getPatients();
+
+            // Calculate metrics
+            let lowRisk = 0, moderateRisk = 0, highRisk = 0;
+            const ageGroups = { '<20': 0, '20-25': 0, '26-30': 0, '31-35': 0, '>35': 0 };
+            const villages = {};
+            const hemoglobinByRisk = { LOW: [], MODERATE: [], HIGH: [] };
+            const adherenceStats = { ironMorning: 0, ironEvening: 0, protein: 0, rest: 0 };
+
+            patients.forEach(patient => {
+                const score = RiskCalculator.calculateScore(patient);
+                const category = RiskCalculator.getCategory(score);
+                const latestVisit = patient.visits[patient.visits.length - 1];
+
+                // Risk distribution
+                if (category === 'LOW') lowRisk++;
+                else if (category === 'MODERATE') moderateRisk++;
+                else if (category === 'HIGH') highRisk++;
+
+                // Age distribution
+                if (patient.age < 20) ageGroups['<20']++;
+                else if (patient.age <= 25) ageGroups['20-25']++;
+                else if (patient.age <= 30) ageGroups['26-30']++;
+                else if (patient.age <= 35) ageGroups['31-35']++;
+                else ageGroups['>35']++;
+
+                // Village distribution
+                villages[patient.village] = (villages[patient.village] || 0) + 1;
+
+                // Hemoglobin by risk
+                hemoglobinByRisk[category].push(latestVisit.hemoglobin);
+
+                // Adherence
+                if (patient.adherence.ironMorning) adherenceStats.ironMorning++;
+                if (patient.adherence.ironEvening) adherenceStats.ironEvening++;
+                if (patient.adherence.protein) adherenceStats.protein++;
+                if (patient.adherence.rest) adherenceStats.rest++;
+            });
+
+            // Update metrics
+            document.getElementById('totalPatients').textContent = patients.length;
+            document.getElementById('lowRiskCount').textContent = lowRisk;
+            document.getElementById('moderateRiskCount').textContent = moderateRisk;
+            document.getElementById('highRiskCount').textContent = highRisk;
+
+            // Update adherence percentages
+            const totalPatients = patients.length || 1;
+            document.getElementById('ironMorningAdherence').textContent = Math.round((adherenceStats.ironMorning / totalPatients) * 100) + '%';
+            document.getElementById('ironEveningAdherence').textContent = Math.round((adherenceStats.ironEvening / totalPatients) * 100) + '%';
+            document.getElementById('proteinAdherence').textContent = Math.round((adherenceStats.protein / totalPatients) * 100) + '%';
+            document.getElementById('restAdherence').textContent = Math.round((adherenceStats.rest / totalPatients) * 100) + '%';
+
+            // Create charts
+            createRiskDistributionChart(lowRisk, moderateRisk, highRisk);
+            createAgeDistributionChart(ageGroups);
+            createHemoglobinByRiskChart(hemoglobinByRisk);
+            createVillageDistributionChart(villages);
+
+            // Generate insights
+            generateInsights(patients, lowRisk, moderateRisk, highRisk);
+        }
+
+        function createRiskDistributionChart(low, moderate, high) {
+            const ctx = document.getElementById('riskDistributionChart').getContext('2d');
+            charts.riskDistribution = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Low Risk', 'Moderate Risk', 'High Risk'],
+                    datasets: [{
+                        data: [low, moderate, high],
+                        backgroundColor: [
+                            'rgba(46, 125, 50, 0.8)',
+                            'rgba(245, 124, 0, 0.8)',
+                            'rgba(198, 40, 40, 0.8)'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        function createAgeDistributionChart(ageGroups) {
+            const ctx = document.getElementById('ageDistributionChart').getContext('2d');
+            charts.ageDistribution = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(ageGroups),
+                    datasets: [{
+                        label: 'Number of Patients',
+                        data: Object.values(ageGroups),
+                        backgroundColor: 'rgba(25, 118, 210, 0.8)',
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createHemoglobinByRiskChart(hemoglobinByRisk) {
+            const ctx = document.getElementById('hemoglobinByRiskChart').getContext('2d');
+
+            const avgLow = hemoglobinByRisk.LOW.length > 0
+                ? (hemoglobinByRisk.LOW.reduce((a, b) => a + b, 0) / hemoglobinByRisk.LOW.length).toFixed(1)
+                : 0;
+            const avgModerate = hemoglobinByRisk.MODERATE.length > 0
+                ? (hemoglobinByRisk.MODERATE.reduce((a, b) => a + b, 0) / hemoglobinByRisk.MODERATE.length).toFixed(1)
+                : 0;
+            const avgHigh = hemoglobinByRisk.HIGH.length > 0
+                ? (hemoglobinByRisk.HIGH.reduce((a, b) => a + b, 0) / hemoglobinByRisk.HIGH.length).toFixed(1)
+                : 0;
+
+            charts.hemoglobinByRisk = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Low Risk', 'Moderate Risk', 'High Risk'],
+                    datasets: [{
+                        label: 'Average Hemoglobin (g/dL)',
+                        data: [avgLow, avgModerate, avgHigh],
+                        backgroundColor: [
+                            'rgba(46, 125, 50, 0.8)',
+                            'rgba(245, 124, 0, 0.8)',
+                            'rgba(198, 40, 40, 0.8)'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 5,
+                            max: 15
+                        }
+                    }
+                }
+            });
+        }
+
+        function createVillageDistributionChart(villages) {
+            const ctx = document.getElementById('villageDistributionChart').getContext('2d');
+            charts.villageDistribution = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(villages),
+                    datasets: [{
+                        data: Object.values(villages),
+                        backgroundColor: [
+                            'rgba(25, 118, 210, 0.8)',
+                            'rgba(0, 137, 123, 0.8)',
+                            'rgba(46, 125, 50, 0.8)',
+                            'rgba(245, 124, 0, 0.8)',
+                            'rgba(198, 40, 40, 0.8)'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        function generateInsights(patients, lowRisk, moderateRisk, highRisk) {
+            const insights = [];
+            const total = patients.length;
+
+            // Risk insights
+            const highRiskPercentage = Math.round((highRisk / total) * 100);
+            if (highRiskPercentage > 20) {
+                insights.push({
+                    type: 'danger',
+                    text: `${highRiskPercentage}% of patients are high-risk. Immediate intervention recommended for these cases.`
+                });
+            } else if (highRiskPercentage > 0) {
+                insights.push({
+                    type: 'warning',
+                    text: `${highRisk} patient(s) classified as high-risk. Ensure regular monitoring and follow-up.`
+                });
+            }
+
+            // Age insights
+            const youngMothers = patients.filter(p => p.age < 20).length;
+            const olderMothers = patients.filter(p => p.age > 35).length;
+
+            if (youngMothers > 0) {
+                insights.push({
+                    type: 'info',
+                    text: `${youngMothers} patient(s) under 20 years old. Young maternal age requires special nutritional support.`
+                });
+            }
+
+            if (olderMothers > 0) {
+                insights.push({
+                    type: 'info',
+                    text: `${olderMothers} patient(s) over 35 years old. Advanced maternal age requires closer monitoring.`
+                });
+            }
+
+            // Hemoglobin insights
+            const severeAnemia = patients.filter(p => {
+                const latestVisit = p.visits[p.visits.length - 1];
+                return latestVisit.hemoglobin < 7;
+            }).length;
+
+            if (severeAnemia > 0) {
+                insights.push({
+                    type: 'danger',
+                    text: `${severeAnemia} patient(s) with severe anemia (Hb < 7 g/dL). Immediate referral to PHC required.`
+                });
+            }
+
+            // Hypertension insights
+            const severeHypertension = patients.filter(p => {
+                const latestVisit = p.visits[p.visits.length - 1];
+                return latestVisit.systolicBP > 160 || latestVisit.diastolicBP > 110;
+            }).length;
+
+            if (severeHypertension > 0) {
+                insights.push({
+                    type: 'danger',
+                    text: `${severeHypertension} patient(s) with severe hypertension. Urgent medical attention needed.`
+                });
+            }
+
+            // Positive insights
+            if (lowRisk > moderateRisk + highRisk) {
+                insights.push({
+                    type: 'success',
+                    text: `Majority of patients (${lowRisk}) are low-risk. Good overall maternal health in the community.`
+                });
+            }
+
+            // Render insights
+            const insightsContainer = document.getElementById('insights');
+            insightsContainer.innerHTML = '';
+
+            if (insights.length === 0) {
+                insightsContainer.innerHTML = '<p class="text-muted">No significant insights to display. Add more patients to see analytics.</p>';
+                return;
+            }
+
+            insights.forEach(insight => {
+                const div = document.createElement('div');
+                div.className = `alert alert-${insight.type}`;
+                div.style.marginBottom = '12px';
+                div.textContent = insight.text;
+                insightsContainer.appendChild(div);
+            });
+        }
+
+        // Load analytics on page load
+        document.addEventListener('DOMContentLoaded', loadAnalytics);
+    </script>
+</body>
+
+</html>

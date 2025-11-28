@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FetoSense - Patient Details</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center justify-content-between" style="width: 100%;">
+                <a href="index.html" class="navbar-brand">
+                    <span>🤰</span>
+                    <span>FetoSense</span>
+                </a>
+                <div class="d-flex gap-1">
+                    <a href="index.html" class="nav-link">Dashboard</a>
+                    <a href="patients.html" class="nav-link">Patients</a>
+                    <a href="add-patient.html" class="nav-link">Add Patient</a>
+                    <a href="analytics.html" class="nav-link">Analytics</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="index.html">Dashboard</a>
+            <span class="breadcrumb-separator">/</span>
+            <a href="patients.html">Patients</a>
+            <span class="breadcrumb-separator">/</span>
+            <span id="patientNameBreadcrumb">Patient Details</span>
+        </div>
+
+        <!-- Emergency Banner (shown for high-risk patients) -->
+        <div id="emergencyBanner" style="display: none;"></div>
+
+        <!-- Patient Header -->
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start" style="flex-wrap: wrap; gap: 16px;">
+                    <div>
+                        <h1 class="page-title" id="patientName" style="margin-bottom: 8px;"></h1>
+                        <div class="d-flex gap-2" style="flex-wrap: wrap; align-items: center;">
+                            <span class="text-muted" id="patientAge"></span>
+                            <span class="text-muted">•</span>
+                            <span class="text-muted" id="patientVillage"></span>
+                            <span class="text-muted">•</span>
+                            <span id="riskBadge"></span>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-1">
+                        <button class="btn btn-secondary btn-sm" onclick="window.history.back()">
+                            ← Back
+                        </button>
+                        <a href="add-patient.html" class="btn btn-primary btn-sm">
+                            Record New Visit
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+            <!-- Demographics -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Patient Information</h2>
+                </div>
+                <div class="card-body">
+                    <table style="width: 100%;">
+                        <tr style="border-bottom: 1px solid var(--border-color-light);">
+                            <td style="padding: 12px 0; font-weight: 600; color: var(--text-secondary);">Phone</td>
+                            <td style="padding: 12px 0;" id="patientPhone"></td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border-color-light);">
+                            <td style="padding: 12px 0; font-weight: 600; color: var(--text-secondary);">Village</td>
+                            <td style="padding: 12px 0;" id="patientVillageDetail"></td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border-color-light);">
+                            <td style="padding: 12px 0; font-weight: 600; color: var(--text-secondary);">ASHA Worker
+                            </td>
+                            <td style="padding: 12px 0;" id="ashaName"></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px 0; font-weight: 600; color: var(--text-secondary);">Family Contact
+                            </td>
+                            <td style="padding: 12px 0;" id="familyContact"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Latest Vitals -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Latest Vitals</h2>
+                </div>
+                <div class="card-body">
+                    <table style="width: 100%;">
+                        <tr style="border-bottom: 1px solid var(--border-color-light);">
+                            <td style="padding: 12px 0; font-weight: 600; color: var(--text-secondary);">Visit Date</td>
+                            <td style="padding: 12px 0;" id="latestVisitDate"></td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border-color-light);">
+                            <td style="padding: 12px 0; font-weight: 600; color: var(--text-secondary);">Hemoglobin</td>
+                            <td style="padding: 12px 0; font-family: var(--font-family-mono);" id="hemoglobin"></td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border-color-light);">
+                            <td style="padding: 12px 0; font-weight: 600; color: var(--text-secondary);">Blood Pressure
+                            </td>
+                            <td style="padding: 12px 0; font-family: var(--font-family-mono);" id="bloodPressure"></td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border-color-light);">
+                            <td style="padding: 12px 0; font-weight: 600; color: var(--text-secondary);">Weight</td>
+                            <td style="padding: 12px 0; font-family: var(--font-family-mono);" id="weight"></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px 0; font-weight: 600; color: var(--text-secondary);">Symptoms</td>
+                            <td style="padding: 12px 0;" id="symptoms"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Risk Assessment -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Risk Assessment</h2>
+            </div>
+            <div class="card-body">
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+                    <div>
+                        <div class="text-muted" style="font-size: 0.875rem; margin-bottom: 4px;">Risk Score</div>
+                        <div style="font-size: 2rem; font-weight: 700;" id="riskScore"></div>
+                    </div>
+                    <div>
+                        <div class="text-muted" style="font-size: 0.875rem; margin-bottom: 4px;">Risk Category</div>
+                        <div style="font-size: 1.5rem; font-weight: 700;" id="riskCategory"></div>
+                    </div>
+                    <div>
+                        <div class="text-muted" style="font-size: 0.875rem; margin-bottom: 4px;">Next Follow-up</div>
+                        <div style="font-size: 1.25rem; font-weight: 600;" id="nextFollowup"></div>
+                    </div>
+                </div>
+
+                <div
+                    style="background-color: var(--gray-50); padding: 20px; border-radius: 8px; border-left: 4px solid var(--primary-blue);">
+                    <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 12px;">📋 Clinical Recommendations
+                    </h3>
+                    <ul id="recommendations" style="margin: 0; padding-left: 20px;"></ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Adherence Tracking -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Today's Adherence Checklist</h2>
+            </div>
+            <div class="card-body">
+                <div id="adherenceChecklist"
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; margin-bottom: 24px;">
+                </div>
+
+                <div>
+                    <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 8px;">7-Day Adherence Summary</h3>
+                    <div
+                        style="background-color: var(--gray-200); height: 32px; border-radius: 16px; overflow: hidden;">
+                        <div id="adherenceFill"
+                            style="height: 100%; background: linear-gradient(90deg, var(--success-green), var(--success-green-light)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; transition: width 0.3s ease;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vitals Trends -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Vitals Trends</h2>
+            </div>
+            <div class="card-body">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                    <div>
+                        <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 16px;">Hemoglobin Over Time</h3>
+                        <div class="chart-container">
+                            <canvas id="hemoglobinChart"></canvas>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 16px;">Blood Pressure Over Time
+                        </h3>
+                        <div class="chart-container">
+                            <canvas id="bpChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visit History -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Visit History</h2>
+            </div>
+            <div class="card-body" style="padding: 0;">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Hemoglobin (g/dL)</th>
+                                <th>Blood Pressure (mmHg)</th>
+                                <th>Weight (kg)</th>
+                                <th>Symptoms</th>
+                            </tr>
+                        </thead>
+                        <tbody id="visitHistory"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        let currentPatient = null;
+        let hemoglobinChart = null;
+        let bpChart = null;
+
+        function loadPatientDetails() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const patientId = urlParams.get('id');
+
+            if (!patientId) {
+                window.location.href = 'patients.html';
+                return;
+            }
+
+            currentPatient = FetoSense.getPatient(patientId);
+
+            if (!currentPatient) {
+                alert('Patient not found');
+                window.location.href = 'patients.html';
+                return;
+            }
+
+            renderPatientDetails();
+        }
+
+        function renderPatientDetails() {
+            const latestVisit = currentPatient.visits[currentPatient.visits.length - 1];
+            const score = RiskCalculator.calculateScore(currentPatient);
+            const category = RiskCalculator.getCategory(score);
+            const followupDate = RiskCalculator.getNextFollowupDate(currentPatient);
+            const recommendations = RiskCalculator.getRecommendations(currentPatient);
+
+            // Update page title and breadcrumb
+            document.title = `FetoSense - ${currentPatient.name}`;
+            document.getElementById('patientNameBreadcrumb').textContent = currentPatient.name;
+
+            // Emergency banner for high-risk patients
+            if (category === 'HIGH') {
+                const banner = document.getElementById('emergencyBanner');
+                banner.style.display = 'block';
+                banner.className = 'emergency-banner';
+                banner.innerHTML = `
+                    <h3>🚨 HIGH RISK PATIENT - Immediate Attention Required</h3>
+                    <p style="margin-bottom: 16px;">This patient requires urgent medical attention. Contact healthcare facility immediately.</p>
+                    <div class="emergency-actions">
+                        <a href="tel:108" class="btn">📞 Call 108 Ambulance</a>
+                        <a href="tel:+919876500000" class="btn">📞 Call PHC</a>
+                        <a href="tel:${currentPatient.familyContact}" class="btn">📞 Call Family</a>
+                    </div>
+                `;
+            }
+
+            // Patient header
+            document.getElementById('patientName').textContent = currentPatient.name;
+            document.getElementById('patientAge').textContent = `${currentPatient.age} years old`;
+            document.getElementById('patientVillage').textContent = currentPatient.village;
+            document.getElementById('riskBadge').innerHTML = `<span class="badge badge-${category.toLowerCase()}">${category} RISK</span>`;
+
+            // Demographics
+            document.getElementById('patientPhone').textContent = currentPatient.phone;
+            document.getElementById('patientVillageDetail').textContent = currentPatient.village;
+            document.getElementById('ashaName').textContent = currentPatient.ashaName;
+            document.getElementById('familyContact').textContent = currentPatient.familyContact;
+
+            // Latest vitals
+            document.getElementById('latestVisitDate').textContent = Utils.formatDate(latestVisit.date);
+            document.getElementById('hemoglobin').textContent = `${latestVisit.hemoglobin} g/dL`;
+            document.getElementById('bloodPressure').textContent = `${latestVisit.systolicBP}/${latestVisit.diastolicBP} mmHg`;
+            document.getElementById('weight').textContent = `${latestVisit.weight} kg`;
+            document.getElementById('symptoms').textContent = latestVisit.symptoms.length > 0 ? latestVisit.symptoms.join(', ') : 'None reported';
+
+            // Risk assessment
+            document.getElementById('riskScore').textContent = `${score} points`;
+            document.getElementById('riskCategory').innerHTML = `<span class="badge badge-${category.toLowerCase()}">${category}</span>`;
+            document.getElementById('nextFollowup').textContent = Utils.formatDate(followupDate);
+
+            const recommendationsList = document.getElementById('recommendations');
+            recommendationsList.innerHTML = '';
+            recommendations.forEach(rec => {
+                const li = document.createElement('li');
+                li.textContent = rec;
+                li.style.marginBottom = '8px';
+                recommendationsList.appendChild(li);
+            });
+
+            // Adherence checklist
+            renderAdherence();
+
+            // Charts
+            renderCharts();
+
+            // Visit history
+            renderVisitHistory();
+        }
+
+        function renderAdherence() {
+            const adherenceItems = [
+                { key: 'ironMorning', label: 'Iron Tablet - Morning', icon: '💊' },
+                { key: 'ironEvening', label: 'Iron Tablet - Evening', icon: '💊' },
+                { key: 'protein', label: 'High-protein Food', icon: '🥚' },
+                { key: 'rest', label: 'Adequate Rest', icon: '😴' }
+            ];
+
+            const checklist = document.getElementById('adherenceChecklist');
+            checklist.innerHTML = '';
+
+            adherenceItems.forEach(item => {
+                const checked = currentPatient.adherence[item.key];
+                const div = document.createElement('div');
+                div.style.cssText = 'background-color: var(--gray-50); padding: 12px; border-radius: 8px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: background-color 0.2s;';
+                div.innerHTML = `
+                    <input type="checkbox" ${checked ? 'checked' : ''} 
+                           onchange="toggleAdherence('${item.key}')" 
+                           style="width: 20px; height: 20px; cursor: pointer;">
+                    <span style="font-size: 1.25rem;">${item.icon}</span>
+                    <span style="flex: 1;">${item.label}</span>
+                `;
+                checklist.appendChild(div);
+            });
+
+            // Calculate adherence percentage
+            const adherenceCount = Object.values(currentPatient.adherence).filter(v => v).length;
+            const adherencePercentage = Math.round((adherenceCount / Object.keys(currentPatient.adherence).length) * 100);
+
+            const fill = document.getElementById('adherenceFill');
+            fill.style.width = adherencePercentage + '%';
+            fill.textContent = adherencePercentage + '%';
+        }
+
+        function toggleAdherence(key) {
+            currentPatient.adherence[key] = !currentPatient.adherence[key];
+            FetoSense.updatePatient(currentPatient.id, { adherence: currentPatient.adherence });
+            renderAdherence();
+        }
+
+        function renderCharts() {
+            // Destroy existing charts
+            if (hemoglobinChart) hemoglobinChart.destroy();
+            if (bpChart) bpChart.destroy();
+
+            // Create new charts
+            hemoglobinChart = ChartUtils.createHemoglobinChart('hemoglobinChart', currentPatient);
+            bpChart = ChartUtils.createBPChart('bpChart', currentPatient);
+        }
+
+        function renderVisitHistory() {
+            const tbody = document.getElementById('visitHistory');
+            tbody.innerHTML = '';
+
+            // Reverse to show most recent first
+            const visits = [...currentPatient.visits].reverse();
+
+            visits.forEach(visit => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${Utils.formatDate(visit.date)}</strong></td>
+                    <td style="font-family: var(--font-family-mono);">${visit.hemoglobin} g/dL</td>
+                    <td style="font-family: var(--font-family-mono);">${visit.systolicBP}/${visit.diastolicBP} mmHg</td>
+                    <td style="font-family: var(--font-family-mono);">${visit.weight} kg</td>
+                    <td>${visit.symptoms.length > 0 ? visit.symptoms.join(', ') : 'None'}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Load patient details on page load
+        document.addEventListener('DOMContentLoaded', loadPatientDetails);
+    </script>
+</body>
+
+</html>
